@@ -1,0 +1,64 @@
+class PriorityQueue:
+    def __init__(self):
+        self.queue = []
+
+    def insert(self, item, priority):
+        self.queue.append((item, priority))
+        self.queue.sort(key=lambda x: x[1])  # Sort by priority
+
+    def delete(self):
+        if not self.is_empty():
+            return self.queue.pop(0)[0]
+        else:
+            return None
+
+    def traverse(self):
+        return self.queue
+
+    def is_empty(self):
+        return len(self.queue) == 0
+
+def main():
+    pq = PriorityQueue()
+
+    while True:
+        print("\nPriority Queue Operations:")
+        print("1. Insert")
+        print("2. Delete")
+        print("3. Traverse")
+        print("4. Is Empty")
+        print("5. Exit")
+        choice = int(input("Enter your choice: "))
+
+        if choice == 1:
+            item = input("Enter element to insert: ")
+            priority = int(input("Enter priority: "))
+            pq.insert(item, priority)
+            print(f"Inserted item: {item} with priority: {priority}")
+
+        elif choice == 2:
+            item = pq.delete()
+            if item is not None:
+                print(f"Deleted item: {item}")
+            else:
+                print("Queue is empty")
+
+        elif choice == 3:
+            queue = pq.traverse()
+            print(f"Queue: {queue}")
+
+        elif choice == 4:
+            if pq.is_empty():
+                print("Queue is empty")
+            else:
+                print("Queue is not empty")
+
+        elif choice == 5:
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
