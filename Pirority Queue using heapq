@@ -1,0 +1,66 @@
+import heapq
+
+class PriorityQueue:
+    def __init__(self):
+        self._queue = {}
+        self._min_heap = []
+
+    def push(self, item, priority):
+        if priority in self._queue:
+            self._queue[priority].append(item)
+        else:
+            self._queue[priority] = [item]
+            heapq.heappush(self._min_heap, priority)
+
+    def pop(self):
+        if not self._min_heap:
+            raise IndexError("pop from an empty priority queue")
+        min_priority = heapq.heappop(self._min_heap)
+        item = self._queue[min_priority].pop(0)
+        if not self._queue[min_priority]:
+            del self._queue[min_priority]
+        return item
+
+    def is_empty(self):
+        return not self._min_heap
+
+    def peek(self):
+        if not self._min_heap:
+            raise IndexError("peek from an empty priority queue")
+        min_priority = self._min_heap[0]
+        return self._queue[min_priority][0]
+
+def main():
+    pq = PriorityQueue()
+    while True:
+        command = input("Enter command (push <item> <priority>, pop, peek, quit): ").strip().split()
+        if not command:
+            continue
+        if command[0] == "push" and len(command) == 3:
+            item = command[1]
+            try:
+                priority = int(command[2])
+            except ValueError:
+                print("Priority must be an integer.")
+                continue
+            pq.push(item, priority)
+            print(f"Pushed: {item} with priority {priority}")
+        elif command[0] == "pop":
+            if pq.is_empty():
+                print("The priority queue is empty.")
+            else:
+                item = pq.pop()
+                print(f"Popped: {item}")
+        elif command[0] == "peek":
+            if pq.is_empty():
+                print("The priority queue is empty.")
+            else:
+                item = pq.peek()
+                print(f"Peek: {item}")
+        elif command[0] == "quit":
+            break
+        else:
+            print("Invalid command. Please use 'push <item> <priority>', 'pop', 'peek', or 'quit'.")
+
+if __name__ == "__main__":
+    main()
