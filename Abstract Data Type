@@ -1,0 +1,62 @@
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if self.is_empty():
+            raise IndexError("pop from empty stack")
+        return self.items.pop()
+
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("peek from empty stack")
+        return self.items[-1]
+
+    def size(self):
+        return len(self.items)
+
+# Function to interact with the stack based on user input
+def stack_interact():
+    s = Stack()
+    while True:
+        print("\nStack operations:")
+        print("1. Push")
+        print("2. Pop")
+        print("3. Peek")
+        print("4. Size")
+        print("5. Quit")
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == '1':
+            item = input("Enter the item to push onto the stack: ")
+            s.push(item)
+            print(f"{item} pushed onto stack.")
+        elif choice == '2':
+            try:
+                item = s.pop()
+                print(f"Popped item: {item}")
+            except IndexError as e:
+                print("Error:", e)
+        elif choice == '3':
+            try:
+                item = s.peek()
+                print(f"Top item: {item}")
+            except IndexError as e:
+                print("Error:", e)
+        elif choice == '4':
+            print(f"Size of stack: {s.size()}")
+        elif choice == '5':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please enter a number from 1 to 5.")
+
+# Run the stack interaction function
+if __name__ == "__main__":
+    stack_interact()
