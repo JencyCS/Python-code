@@ -1,0 +1,134 @@
+import heapq
+from collections import Counter
+import json
+
+class Node:
+    def __init__(self, char=None, freq=None):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+
+    def __lt__(self, other):
+        return self.freq < other.freq
+
+def build_huffman_tree(frequencies):
+    heap = [Node(char, freq) for char, freq in frequencies.items()]
+    heapq.heapify(heap)
+
+    while len(heap) > 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+        merged = Node(freq=left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        heapq.heappush(heap, merged)
+
+    return heap[0]
+
+def generate_codes(node, prefix="", codebook=None):
+    if codebook is None:
+        codebook = {}
+    
+    if node:
+        if node.char is not None:
+            codebook[node.char] = prefix
+        generate_codes(node.left, prefix + "0", codebook)
+        generate_codes(node.right, prefix + "1", codebook)
+    
+    return codebook
+
+def huffman_encoding(data):
+    if not data:
+        return "", {}
+
+    frequencies = Counter(data)
+    root = build_huffman_tree(frequencies)
+    codebook = generate_codes(root)
+    encoded_data = ''.join(codebook[char] for char in data)
+
+    # Include the codebook in the encoded data as a JSON string
+    combined_data = json.dumps({"encoded_data": encoded_data, "codebook": codebook})
+
+    return combined_data
+
+def huffman_decoding(combined_data):
+    data = json.loads(combined_data)
+    encoded_data = data["encoded_data"]
+    codebook = data["codebook"]
+
+    reverse_codebook = {v: k for k, v in codebook.items()}
+    decoded_data = ""
+    current_code = ""
+
+    for bit in encoded_data:
+        current_code += bit
+        if current_code in reverse_codebook:
+            decoded_data += reverse_codebook[current_code]
+            current_code = ""
+
+    return decoded_data
+
+# Enhanced user interaction for file handling
+def main():
+    while True:
+        print("Jency Nadar")
+        print("\nHuffman Coding")
+        print("1. Encode a file")
+        print("2. Decode a file")
+        print("3. Exit")
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            file_path = input("Enter the path to the file you want to encode: ").strip('"')
+            try:
+                with open(file_path, 'r') as file:
+                    data = file.read()
+                combined_data = huffman_encoding(data)
+
+                # Displaying the encoded data on the console
+                print("\nEncoded Data:\n", json.loads(combined_data)["encoded_data"])
+
+                # Saving combined data to a file
+                encoded_file_path = file_path + ".huff"
+                with open(encoded_file_path, 'w') as encoded_file:
+                    encoded_file.write(combined_data)
+
+                print(f"\nEncoded Data saved to: {encoded_file_path}")
+
+            except FileNotFoundError:
+                print("File not found. Please try again.")
+
+        elif choice == "2":
+            encoded_file_path = input("Enter the path to the encoded file: ").strip('"')
+
+            try:
+                with open(encoded_file_path, 'r') as encoded_file:
+                    combined_data = encoded_file.read()
+
+                decoded_data = huffman_decoding(combined_data)
+
+                # Displaying the decoded data on the console
+                print("\nDecoded Data:\n", decoded_data)
+
+                # Saving decoded data to a file
+                decoded_file_path = encoded_file_path + ".decoded.txt"
+                with open(decoded_file_path, 'w') as decoded_file:
+                    decoded_file.write(decoded_data)
+
+                print(f"\nDecoded Data saved to: {decoded_file_path}")
+
+            except FileNotFoundError:
+                print("File not found. Please try again.")
+            except json.JSONDecodeError:
+                print("Invalid data format. Please try again.")
+
+        elif choice == "3":
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
