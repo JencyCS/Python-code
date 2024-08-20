@@ -1,0 +1,129 @@
+class TreeNode:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+def insert_level_order(arr, root, i, n):
+    if i < n:
+        if arr[i] is None:
+            return None
+        temp = TreeNode(arr[i])
+        root = temp
+        root.left = insert_level_order(arr, root.left, 2 * i + 1, n)
+        root.right = insert_level_order(arr, root.right, 2 * i + 2, n)
+    return root
+
+def build_tree(nodes):
+    nodes = [node if node != 'None' else None for node in nodes]
+    n = len(nodes)
+    return insert_level_order(nodes, None, 0, n)
+
+def print_tree(node, level=0, label="Root:"):
+    if node is not None:
+        print(" " * (level * 4) + label + str(node.value))
+        if node.left is not None or node.right is not None:
+            print_tree(node.left, level + 1, "L---")
+            print_tree(node.right, level + 1, "R---")
+
+def insert_node(root, new_value, parent_value):
+    def insert_recursive(node, new_node, parent_value):
+        if node:
+            if node.value == parent_value:
+                if node.left is None:
+                    node.left = new_node
+                elif node.right is None:
+                    node.right = new_node
+                else:
+                    print("Parent node already has two children.")
+                return
+            insert_recursive(node.left, new_node, parent_value)
+            insert_recursive(node.right, new_node, parent_value)
+
+    new_node = TreeNode(new_value)
+    insert_recursive(root, new_node, parent_value)
+
+def delete_node(root, del_value):
+    def find_min(node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+
+    def delete_recursive(node, value):
+        if node is None:
+            return node
+
+        if value < node.value:
+            node.left = delete_recursive(node.left, value)
+        elif value > node.value:
+            node.right = delete_recursive(node.right, value)
+        else:
+            if node.left is None:
+                temp = node.right
+                node = None
+                return temp
+            elif node.right is None:
+                temp = node.left
+                node = None
+                return temp
+
+            temp = find_min(node.right)
+            node.value = temp.value
+            node.right = delete_recursive(node.right, temp.value)
+        
+        return node
+
+    return delete_recursive(root, del_value)
+
+def traverse_tree(node, traversal_type):
+    result = []
+    def traverse(node, order):
+        if node:
+            if order == "preorder":
+                result.append(node.value)
+                traverse(node.left, order)
+                traverse(node.right, order)
+            elif order == "inorder":
+                traverse(node.left, order)
+                result.append(node.value)
+                traverse(node.right, order)
+            elif order == "postorder":
+                traverse(node.left, order)
+                traverse(node.right, order)
+                result.append(node.value)
+    
+    traverse(node, traversal_type)
+    return result
+
+# Example usage
+if __name__ == "__main__":
+    # Build tree from input
+    nodes_input = input("Enter nodes (comma-separated): ")
+    nodes = nodes_input.split(',')
+    nodes = [x.strip() if x.strip() else 'None' for x in nodes]
+    binary_tree = build_tree(nodes)
+    
+    # Display the tree
+    print("\nInitial Binary Tree:")
+    print_tree(binary_tree)
+    
+    # Insert a node
+    new_value = input("\nEnter value to insert: ")
+    parent_value = input("Enter parent value where the node should be inserted: ")
+    insert_node(binary_tree, new_value, parent_value)
+    
+    print("\nBinary Tree after insertion:")
+    print_tree(binary_tree)
+    
+    # Delete a node
+    del_value = input("\nEnter value to delete: ")
+    binary_tree = delete_node(binary_tree, del_value)
+    
+    print("\nBinary Tree after deletion:")
+    print_tree(binary_tree)
+    
+    # Traverse the tree
+    traversal_type = input("\nEnter traversal type (preorder, inorder, postorder): ").lower()
+    traversal_result = traverse_tree(binary_tree, traversal_type)
+    print(f"\n{traversal_type.capitalize()} Traversal: {traversal_result}")
