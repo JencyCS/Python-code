@@ -1,0 +1,101 @@
+class Stack:
+    def __init__(self):
+        self.items = []
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        if self.is_empty():
+            raise IndexError("pop from empty stack")
+        return self.items.pop()
+
+    def peek(self):
+        if self.is_empty():
+            raise IndexError("peek from empty stack")
+        return self.items[-1]
+
+    def size(self):
+        return len(self.items)
+
+    def display(self):
+        if self.is_empty():
+            print("Stack is empty")
+        else:
+            print("Stack elements:")
+            for item in reversed(self.items):
+                print(item)
+
+    def insert(self, index, item):
+        if index < 0 or index > len(self.items):
+            raise IndexError("index out of range")
+        self.items.insert(index, item)
+
+    def delete(self, index):
+        if index < 0 or index >= len(self.items):
+            raise IndexError("index out of range")
+        return self.items.pop(index)
+
+# Function to interact with the stack based on user input
+def stack_interact(stack):
+    while True:
+        print("\nStack operations:")
+        print("1. Push")
+        print("2. Pop")
+        print("3. Peek")
+        print("4. Display all elements")
+        print("5. Insert")
+        print("6. Delete")
+        print("7. Size")
+        print("8. Quit")
+        choice = input("Enter your choice (1-8): ")
+
+        if choice == '1':
+            item = input("Enter the item to push onto the stack: ")
+            stack.push(item)
+            print(f"{item} pushed onto stack.")
+        elif choice == '2':
+            try:
+                item = stack.pop()
+                print(f"Popped item: {item}")
+            except IndexError as e:
+                print("Error:", e)
+        elif choice == '3':
+            try:
+                item = stack.peek()
+                print(f"Top item: {item}")
+            except IndexError as e:
+                print("Error:", e)
+        elif choice == '4':
+            stack.display()
+        elif choice == '5':
+            try:
+                index = int(input("Enter the index to insert at: "))
+                item = input("Enter the item to insert: ")
+                stack.insert(index, item)
+                print(f"{item} inserted at index {index}.")
+            except (ValueError, IndexError) as e:
+                print("Error:", e)
+        elif choice == '6':
+            try:
+                index = int(input("Enter the index to delete: "))
+                item = stack.delete(index)
+                print(f"Deleted item at index {index}: {item}")
+            except (ValueError, IndexError) as e:
+                print("Error:", e)
+        elif choice == '7':
+            print(f"Size of stack: {stack.size()}")
+        elif choice == '8':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please enter a number from 1 to 8.")
+
+# Example usage with user input
+if __name__ == "__main__":
+    stack = Stack()
+    stack_interact(stack)
+
